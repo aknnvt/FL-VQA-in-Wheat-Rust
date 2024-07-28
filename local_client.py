@@ -63,10 +63,8 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
-# Define the dataset directory
 dataset_dir = '/path/to/dataset'
 
-# Define the transform for the dataset
 transform = transforms.Compose([
     transforms.Resize(256),
     transforms.CenterCrop(224),
@@ -74,18 +72,13 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-# Create the dataset and data loader
 dataset = datasets.ImageFolder(dataset_dir, transform=transform)
 data_loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
-# Create the device (GPU or CPU)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-# Create the model
 model = CentralModel()
 
-# Create the client
 client = LocalClient(cid="client1", model=model, device=device, data_loader=data_loader)
 
-# Start the client
 fl.client.start_client("0.0.0.0:8080", client=client)
