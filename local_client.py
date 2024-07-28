@@ -63,7 +63,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
-dataset_dir = '/path/to/dataset'
+dataset_dir = '/home/akash/akash/Fed/data'
 
 transform = transforms.Compose([
     transforms.Resize(256),
