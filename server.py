@@ -2,7 +2,6 @@ import flwr as fl
 from flwr.server.strategy import FedAvg
 from central_model import CentralModel
 
-# Define Flower server
 fl.server.start_server(
     server_address="0.0.0.0:8080",
     config={"num_rounds": 10},
