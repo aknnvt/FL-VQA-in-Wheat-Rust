@@ -55,17 +55,12 @@ for i in range(len(image_paths)):
         dataset.append((horizontal_flip,question,answer))
         dataset.append((vertical_flip,question,answer))
 
-# Load the model and processor
 model = BlipForQuestionAnswering.from_pretrained("Salesforce/blip-vqa-base")
 processor = AutoProcessor.from_pretrained("Salesforce/blip-vqa-base")
 
-# Set the device (GPU or CPU)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-# Load your dataset (assuming it's a list of tuples with image path, question, and answer)
-
-# Define the optimizer
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
 
 random.shuffle(dataset)
@@ -84,32 +79,24 @@ for epoch in range(20):
             labels = processor(text=answer, return_tensors="pt").input_ids
             inputs["labels"] = labels
 
-            # Move inputs to device
             inputs = {k: v.to(device) for k, v in inputs.items()}
 
-            # Zero the gradients
             optimizer.zero_grad()
 
-            # Forward pass
             outputs = model(**inputs)
             loss = outputs.loss
 
-            # Backward pass
             loss.backward()
-            # Update the model parameters
             optimizer.step()
 
-            # Update the total loss
             total_loss += loss.item()
 
-            # Print the loss every 10 iterations
             if (i + 1) % 10 == 0:
                 tepoch.set_postfix({"Loss": f"{total_loss / (i + 1)}:.4f"})
 
     print(f"Epoch {epoch+1}, Loss: {total_loss / len(dataset)}")
     losses.append(total_loss)
 
-    # Test loop
     test_total_loss = 0
     test_bleu_score = 0
     with torch.no_grad():
@@ -119,18 +106,14 @@ for epoch in range(20):
             labels = processor(text=answer, return_tensors="pt").input_ids
             inputs["labels"] = labels
 
-            # Move inputs to device
             inputs = {k: v.to(device) for k, v in inputs.items()}
 
-            # Forward pass
             outputs = model(**inputs)
             loss = outputs.loss
             test_total_loss += loss.item()
 
-            # Generate answer
             generated_answer = model.generate(**inputs)
 
-            # Calculate BLEU score
             reference = word_tokenize(answer)
             candidate = word_tokenize(processor.decode(generated_answer, skip_special_tokens=True))
             bleu_score = sentence_bleu([reference], candidate)
